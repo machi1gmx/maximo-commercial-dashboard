@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maximo Wood — Commercial Dashboard — Post-Fair Week 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --dark: #ffffff;
+            --dark-2: #ffffff;
+            --dark-3: #f7f7f7;
+            --dark-4: #e5e5e5;
+            --gold: #d4ac0a;
+            --gold-light: #f8d84d;
+            --gold-dark: #b8930a;
+            --white: #1a1a1a;
+            --gray-100: #f7f7f7;
+            --gray-200: #e5e5e5;
+            --gray-300: #444444;
+            --gray-400: #666666;
+            --gray-500: #888888;
+            --gray-600: #aaaaaa;
+            --success: #16a34a;
+            --warning: #d4ac0a;
+            --danger: #dc2626;
+            --info: #2563eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        .header {
+            background: var(--black);
+            padding: 36px 40px 32px;
+            border-bottom: 3px solid #F6CA21;
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #ffffff;
+        }
+
+        .logo-text span {
+            color: #F6CA21;
+        }
+
+        .logo-sub {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: #F6CA21;
+            text-transform: uppercase;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            color: #cccccc;
+            font-weight: 400;
+        }
+
+        .header .date-badge {
+            display: inline-block;
+            background: #F6CA21;
+            color: #000000;
+            padding: 5px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 28px 24px;
+        }
+
+        /* SECTION TITLE */
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin: 32px 0 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--dark-4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title .icon {
+            width: 30px;
+            height: 30px;
+            background: #d4ac0a;
+            color: #ffffff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .section-context {
+            font-size: 13px;
+            color: #888888;
+            margin: -10px 0 18px 40px;
+            font-style: italic;
+        }
+
+        /* KPI CARDS */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e5e5e5;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: #d4ac0a;
+        }
+
+        .kpi-card .kpi-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888888;
+            margin-bottom: 8px;
+        }
+
+        .kpi-card .kpi-value {
+            font-size: 38px;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .kpi-card .kpi-detail {
+            font-size: 11px;
+            color: #666666;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .kpi-card .kpi-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+        }
+
+        .kpi-card.gold .kpi-bar { background: var(--gold); }
+        .kpi-card.green .kpi-bar { background: var(--success); }
+        .kpi-card.amber .kpi-bar { background: var(--warning); }
+        .kpi-card.red .kpi-bar { background: var(--danger); }
+        .kpi-card.blue .kpi-bar { background: var(--info); }
+
+        .kpi-card.gold .kpi-value { color: var(--gold); }
+        .kpi-card.green .kpi-value { color: var(--success); }
+        .kpi-card.amber .kpi-value { color: var(--warning); }
+        .kpi-card.red .kpi-value { color: var(--danger); }
+        .kpi-card.blue .kpi-value { color: var(--info); }
+
+        /* STATUS BADGES */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge.on-track {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .status-badge.building {
+            background: #fef9c3;
+            color: #a16207;
+            border: 1px solid #fde047;
+        }
+
+        .status-badge.attention {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+
+        .status-badge.info {
+            background: #dbeafe;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+
+        /* CHARTS */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .chart-card h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        /* FUNNEL */
+        .funnel-container {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 28px;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 24px;
+        }
+
+        .funnel-container h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .funnel {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .funnel-stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 14px 24px;
+            border-radius: 6px;
+            color: #000000;
+            font-weight: 700;
+            transition: transform 0.2s;
+        }
+
+        .funnel-stage:hover {
+            transform: scale(1.02);
+        }
+
+        .funnel-stage .stage-name {
+            font-size: 13px;
+            min-width: 130px;
+            text-align: right;
+        }
+
+        .funnel-stage .stage-value {
+            font-size: 24px;
+            font-weight: 900;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .funnel-stage .stage-rate {
+            font-size: 11px;
+            opacity: 0.8;
+            min-width: 90px;
+            font-weight: 600;
+        }
+
+        .funnel-arrow {
+            color: #cccccc;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* TABLE */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 24px;
+        }
+
+        .data-table th {
+            background: #1a1a1a;
+            color: #F6CA21;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #F6CA21;
+        }
+
+        .data-table td {
+            padding: 13px 18px;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 13px;
+            color: #333333;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover td {
+            background: #fefce8;
+        }
+
+        .data-table td strong {
+            color: #1a1a1a;
+        }
+
+        /* INSIGHT BOX */
+        .insight-box {
+            background: #fffef5;
+            border: 1px solid #e5e5e5;
+            border-left: 4px solid #d4ac0a;
+            border-radius: 8px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .insight-box h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 14px;
+        }
+
+        .insight-box p {
+            font-size: 13px;
+            color: #444444;
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+
+        .insight-box .highlight {
+            font-weight: 700;
+            color: #b8930a;
+        }
+
+        /* CONCLUSION */
+        .conclusion {
+            background: #1a1a1a;
+            border: 2px solid #F6CA21;
+            border-radius: 8px;
+            padding: 36px;
+            margin-top: 8px;
+            margin-bottom: 32px;
+        }
+
+        .conclusion h3 {
+            font-size: 20px;
+            font-weight: 900;
+            color: #F6CA21;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .conclusion p {
+            font-size: 14px;
+            color: #cccccc;
+            line-height: 1.8;
+        }
+
+        .conclusion .next-steps {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .conclusion .step {
+            background: #2a2a2a;
+            border-radius: 6px;
+            padding: 14px 18px;
+            font-size: 13px;
+            color: #cccccc;
+            border-left: 3px solid var(--gold);
+        }
+
+        .conclusion .step strong {
+            color: #F6CA21;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 11px;
+            color: #999999;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        /* GOLD TICKER BAR */
+        .ticker-bar {
+            background: #F6CA21;
+            color: #000000;
+            padding: 8px 0;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-bar .ticker-content {
+            display: inline-block;
+            animation: ticker 25s linear infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header { padding: 20px; }
+            .logo-text { font-size: 24px; }
+            .container { padding: 16px 12px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+            .kpi-card .kpi-value { font-size: 28px; }
+            .header-top { flex-direction: column; align-items: flex-start; gap: 12px; }
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            .kpi-card { border: 1px solid #ddd; }
+            .kpi-card:hover { transform: none; }
+            .ticker-bar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TICKER BAR -->
+<div class="ticker-bar">
+    <div class="ticker-content">
+        IBS 2026 POST-FAIR REPORT &nbsp;&bull;&nbsp; WEEK 1 FOLLOW-UP &nbsp;&bull;&nbsp; 218 LEADS ACTIVATED &nbsp;&bull;&nbsp; 16 PIPELINE OPPORTUNITIES &nbsp;&bull;&nbsp; PERFORMANCE ON TRACK &nbsp;&bull;&nbsp;
+        IBS 2026 POST-FAIR REPORT &nbsp;&bull;&nbsp; WEEK 1 FOLLOW-UP &nbsp;&bull;&nbsp; 218 LEADS ACTIVATED &nbsp;&bull;&nbsp; 16 PIPELINE OPPORTUNITIES &nbsp;&bull;&nbsp; PERFORMANCE ON TRACK &nbsp;&bull;&nbsp;
+    </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-top">
+        <div class="logo-area">
+            <div>
+                <div class="logo-text">MA<span>X</span>IMO</div>
+                <div class="logo-sub">Thermo</div>
+            </div>
+        </div>
+        <div class="date-badge">Report: Feb 27, 2026</div>
+    </div>
+    <h1>Commercial Performance Dashboard</h1>
+    <div class="subtitle">Post-Fair Follow-Up Report — IBS Week 1 of FUP</div>
+</div>
+
+<div class="container">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 1: IBS KPIs -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section-title">
+        <div class="icon">1</div>
+        IBS — Post-Fair Activation & Engagement (Week 1)
+    </div>
+    <div class="section-context">First week of follow-up after IBS 2026. All IBS e-mails were finalized today.</div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card gold">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Leads Contacted</div>
+            <div class="kpi-value">218</div>
+            <div class="kpi-detail">100% base activated in Week 1 <span class="status-badge on-track">ON TRACK</span></div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Response Rate</div>
+            <div class="kpi-value">6.0%</div>
+            <div class="kpi-detail">13 responses — aligned with weekly avg <span class="status-badge on-track">ON TRACK</span></div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Project Identification Rate</div>
+            <div class="kpi-value">2.7%</div>
+            <div class="kpi-detail">6 leads with active projects <span class="status-badge on-track">HEALTHY</span></div>
+        </div>
+        <div class="kpi-card gold">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Partnership Interest Rate</div>
+            <div class="kpi-value">3.6%</div>
+            <div class="kpi-detail">8 dealership inquiries <span class="status-badge building">BUILDING</span></div>
+        </div>
+        <div class="kpi-card amber">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Pipeline Opportunities</div>
+            <div class="kpi-value">16</div>
+            <div class="kpi-detail">6 projects + 8 partners + 2 quotes</div>
+        </div>
+        <div class="kpi-card gold">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Activation Speed</div>
+            <div class="kpi-value">&lt;7d</div>
+            <div class="kpi-detail">Full base contacted within first week <span class="status-badge on-track">EXCELLENT</span></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 2: NON-IBS KPIs -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section-title">
+        <div class="icon">2</div>
+        Non-IBS — Ongoing Regular Operation
+    </div>
+    <div class="section-context">Continuous commercial operation — not tied to the fair timeline. Standard weekly metrics.</div>
+
+    <div class="kpi-grid">
+        <div class="kpi-card blue">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">New Leads (This Week)</div>
+            <div class="kpi-value">12</div>
+            <div class="kpi-detail">Standard weekly inbound volume <span class="status-badge info">NORMAL</span></div>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Cold Lead %</div>
+            <div class="kpi-value">66.7%</div>
+            <div class="kpi-detail">8 of 12 leads are cold <span class="status-badge attention">MONITOR</span></div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Quotes Sent</div>
+            <div class="kpi-value">2</div>
+            <div class="kpi-detail">Active proposals in pipeline <span class="status-badge building">IN PROGRESS</span></div>
+        </div>
+        <div class="kpi-card gold">
+            <div class="kpi-bar"></div>
+            <div class="kpi-label">Sent to Dealer</div>
+            <div class="kpi-value">0</div>
+            <div class="kpi-detail">Pipeline in maturation phase <span class="status-badge building">MATURING</span></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 3: CHARTS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section-title">
+        <div class="icon">3</div>
+        Visual Analytics
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>IBS Lead Response Breakdown</h3>
+            <div class="chart-wrapper">
+                <canvas id="responseChart" height="260"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h3>Opportunity Distribution (IBS)</h3>
+            <div class="chart-wrapper">
+                <canvas id="opportunityChart" height="260"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3>IBS Response Categorization</h3>
+            <div class="chart-wrapper">
+                <canvas id="categoryChart" height="260"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h3>Non-IBS Lead Quality Profile (Ongoing)</h3>
+            <div class="chart-wrapper">
+                <canvas id="leadQualityChart" height="260"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 4: FUNNEL -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section-title">
+        <div class="icon">4</div>
+        Sales Funnel — IBS Week 1 Snapshot
+    </div>
+
+    <div class="funnel-container">
+        <h3>IBS Conversion Funnel — Post-Fair Week 1</h3>
+        <div class="funnel">
+            <div class="funnel-stage" style="width:100%; background: linear-gradient(90deg, #F6CA21, #f8d84d);">
+                <span class="stage-name">Contacted</span>
+                <span class="stage-value">218</span>
+                <span class="stage-rate">100% of base</span>
+            </div>
+            <div class="funnel-arrow">▼</div>
+            <div class="funnel-stage" style="width:75%; background: linear-gradient(90deg, #d4ac0a, #F6CA21);">
+                <span class="stage-name">Responded</span>
+                <span class="stage-value">13</span>
+                <span class="stage-rate">6.0% response rate</span>
+            </div>
+            <div class="funnel-arrow">▼</div>
+            <div class="funnel-stage" style="width:55%; background: linear-gradient(90deg, #61ce70, #7ddb8a);">
+                <span class="stage-name">Project Identified</span>
+                <span class="stage-value">6</span>
+                <span class="stage-rate">46.2% of responses</span>
+            </div>
+            <div class="funnel-arrow">▼</div>
+            <div class="funnel-stage" style="width:38%; background: linear-gradient(90deg, #3b82f6, #60a5fa);">
+                <span class="stage-name">Quote Sent</span>
+                <span class="stage-value">2</span>
+                <span class="stage-rate">Pipeline active</span>
+            </div>
+            <div class="funnel-arrow">▼</div>
+            <div class="funnel-stage" style="widt            background: linear-gradient(90deg, #94a3b8, #b0bec5); color: #333;              <span class="stage-name">Sent to Dealer</span>
+                <span class="stage-value">0</span>
+                <span class="stage-rate">Maturation phase</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 5: TABLE -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section-title">
+        <div class="icon">5</div>
+        Comparative Performance Summary
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>KPI</th>
+                <th>IBS (Post-Fair Week 1)</th>
+                <th>Non-IBS (Ongoing)</th>
+                <th>Combined</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Leads Worked</strong></td>
+                <td>218</td>
+                <td>12</td>
+                <td>230</td>
+                <td><span class="status-badge on-track">ON TRACK</span></td>
+            </tr>
+            <tr>
+                <td><strong>Response / Engagement</strong></td>
+                <td>13 (6.0%)</td>
+                <td>—</td>
+                <td>13</td>
+                <td><span class="status-badge on-track">ON TRACK</span></td>
+            </tr>
+            <tr>
+                <td><strong>Active Projects</strong></td>
+                <td>6 (2.7%)</td>
+                <td>—</td>
+                <td>6</td>
+                <td><span class="status-badge on-track">HEALTHY</span></td>
+            </tr>
+            <tr>
+                <td><strong>Partnership Leads</strong></td>
+                <td>8 (3.6%)</td>
+                <td>—</td>
+                <td>8</td>
+                <td><span class="status-badge building">BUILDING</span></td>
+            </tr>
+            <tr>
+                <td><strong>Quotes Sent</strong></td>
+                <td>0</td>
+                <td>2</td>
+                <td>2</td>
+                <td><span class="status-badge building">IN PROGRESS</span></td>
+            </tr>
+            <tr>
+                <td><strong>Sent to Dealer</strong></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td><span class="status-badge building">MATURING</span></td>
+            </tr>
+            <tr>
+                <td><strong>Total Pipeline Opportunities</strong></td>
+                <td>14</td>
+                <td>2</td>
+                <td>16</td>
+                <td><span class="status-badge on-track">GROWING</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION 6: STRATEGIC ANALYSIS -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section-title">
+        <div class="icon">6</div>
+        Strategic Analysis
+    </div>
+
+    <div class="insight-box">
+        <h3>Executive Reading — IBS Post-Fair Week 1</h3>
+        <p>
+            The first week of IBS follow-up delivered <span class="highlight">strong operational execution</span>: the entire base of 218 leads was activated within 7 days, demonstrating high team efficiency and process maturity. The <span class="highlight">6.0% response rate is aligned with the historical weekly engagement average</span>, confirming that IBS performance is on track — not declining.
+        </p>
+        <p>
+            From a pipeline perspective, <span class="highlight">16 opportunities are already in development</span>, including 6 leads with confirmed active projects (2.7% identification rate — healthy for Week 1 post-event) and 8 potential channel partners interested in dealership arrangements. The partnership interest (3.6%) represents a strategic growth vector beyond direct sales.
+        </p>
+        <p>
+            Separately, the <span class="highlight">Non-IBS operation continues its regular cadence</span> as an ongoing project, independent of the fair timeline. This week saw 12 new leads and 2 quotes sent. The <span class="highlight">66.7% cold lead ratio</span> in inbound suggests an opportunity to refine lead qualification and segmentation criteria for improved conversion efficiency.
+        </p>
+        <p>
+            <strong>Key takeaway:</strong> We are not measuring just sales — we are measuring <span class="highlight">activation speed, pipeline construction, channel generation, and departmental structuring</span>. The department is building a sustainable growth foundation with SOP implementation, CRM optimization, drip campaigns, and new hire onboarding.
+        </p>
+    </div>
+
+    <!-- CONCLUSION -->
+    <div class="conclusion">
+        <h3>Executive Conclusion</h3>
+        <p>
+            IBS Week 1 was focused on activation and pipeline structuring, with results within the expected range for the initial post-event phase. The commercial engine is operational, the base is fully activated, and real opportunities have been identified. The focus now shifts to conversion and maturation of the generated opportunities. The Non-IBS operation continues on its own cadence, maintaining steady pipeline development.
+        </p>
+        <div class="next-steps">
+            <div class="step"><strong>Week 2-3 (IBS):</strong> Intensify follow-ups and deepen lead qualification</div>
+            <div class="step"><strong>Conversion:</strong> Convert identified projects into formal quotes</div>
+            <div class="step"><strong>Partnerships:</strong> Develop dealership opportunities with interested leads</div>
+            <div class="step"><strong>Structure:</strong> Continue SOP, CRM, drip campaign, and new hire development</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    Maximo Wood — Commercial Department — Executive Report — Confidential &bull; Generated Feb 27, 2026
+</div>
+
+<script>
+    // Chart.js global config — Maximo brand
+    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = '#666';
+
+    // 1. IBS Response Breakdown (Horizontal Bar)
+    new Chart(document.getElementById('responseChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Contacted', 'Responded', 'Active Project', 'Partnership Interest'],
+            datasets: [{
+                label: 'Leads',
+                data: [218, 13, 6, 8],
+                backgroundColor: ['#F6CA21', '#61ce70', '#3b82f6', '#8b5cf6'],
+                borderRadius: 4,
+                barThickness: 30,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1a1a1a',
+                    titleColor: '#F6CA21',
+                    bodyColor: '#fff',
+                    borderColor: '#F6CA21',
+                    borderWidth: 1,
+                    callbacks: {
+                        afterLabel: function(ctx) {
+                            const rates = ['100%', '6.0%', '2.7%', '3.6%'];
+                            return 'Rate: ' + rates[ctx.dataIndex];
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: '#f0f0f0' },
+                    ticks: { color: '#666', font: { size: 11 } }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { color: '#333', font: { size: 12, weight: '600' } }
+                }
+            }
+        }
+    });
+
+    // 2. Opportunity Distribution (Doughnut)
+    new Chart(document.getElementById('opportunityChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Active Projects', 'Partnership Interest', 'Quotes Sent (Non-IBS)', 'Pending Response'],
+            datasets: [{
+                data: [6, 8, 2, 202],
+                backgroundColor: ['#16a34a', '#8b5cf6', '#2563eb', '#e5e5e5'],
+                borderWidth: 2,
+                borderColor: '#ffffff',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 14, usePointStyle: true, pointStyle: 'circle', color: '#555', font: { size: 11 } }
+                },
+                tooltip: {
+                    backgroundColor: '#000',
+                    titleColor: '#F6CA21',
+                    bodyColor: '#fff',
+                    borderColor: '#F6CA21',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(ctx) {
+                            const total = 218;
+                            const pct = ((ctx.raw / total) * 100).toFixed(1);
+                            return ctx.label + ': ' + ctx.raw + ' (' + pct + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // 3. IBS Response Categorization (Pie)
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Active Project', 'Partnership/Dealership', 'No Response Yet'],
+            datasets: [{
+                data: [6, 8, 204],
+                backgroundColor: ['#16a34a', '#8b5cf6', '#e5e5e5'],
+                borderWidth: 2,
+                borderColor: '#ffffff',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 14, usePointStyle: true, pointStyle: 'circle', color: '#555', font: { size: 11 } }
+                },
+                tooltip: {
+                    backgroundColor: '#000',
+                    titleColor: '#F6CA21',
+                    bodyColor: '#fff',
+                    borderColor: '#F6CA21',
+                    borderWidth: 1
+                }
+            }
+        }
+    });
+
+    // 4. Non-IBS Lead Quality (Doughnut)
+    new Chart(document.getElementById('leadQualityChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Cold Leads', 'Warm Leads'],
+            datasets: [{
+                data: [8, 4],
+                backgroundColor: ['#94a3b8', '#d4ac0a'],
+                borderWidth: 2,
+                borderColor: '#ffffff',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '55%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 14, usePointStyle: true, pointStyle: 'circle', color: '#555', font: { size: 11 } }
+                },
+                tooltip: {
+                    backgroundColor: '#000',
+                    titleColor: '#F6CA21',
+                    bodyColor: '#fff',
+                    borderColor: '#F6CA21',
+                    borderWidth: 1
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
